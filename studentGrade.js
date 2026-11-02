@@ -36,7 +36,7 @@ function collectScore (numberOfSubject) {
 
 function collectSubjectScores (studentNumber, numberOfSubject) {
     console.log(`Entering score for student ${studentNumber} :`);
-    subjectsScores = [];
+    const subjectsScores = [];
     for (let index = 1; index <= numberOfSubject;index++ ) {
         subjectsScores.push(collectScore(studentNumber,numberOfSubject));
     }
@@ -47,7 +47,7 @@ function collectSubjectScores (studentNumber, numberOfSubject) {
 
 function collectStudentsScores (studentNumber, numberOfSubject) {
 
-    studentsScores = [];
+    const studentsScores = [];
     for (let index = 1; index <= studentNumber;index++ ) {
     
         studentsScores.push(collectSubjectScores(studentNumber,numberOfSubject));
@@ -59,10 +59,10 @@ function collectStudentsScores (studentNumber, numberOfSubject) {
 
 function collectAllClassScore (classNumber,studentNumber, numberOfSubject) {
     
-    allClassScore = [];
+    const allClassScore = [];
     
     for (let index = 1; index <= classNumber;index++) {
-        console.log(`Entering score for student ${classNumber} :`);
+        console.log(`Entering score for Class ${classNumber} :`);
         allClassScore.push(collectStudentsScores(studentNumber, numberOfSubject));
     }
     return allClassScore;
@@ -71,9 +71,9 @@ function collectAllClassScore (classNumber,studentNumber, numberOfSubject) {
 
 function calculateTotalOfStudentScore(allClassScore) {
     
-    allStudentTotal = [];
-    for (let classIndex = 0; classIndex < allClassScore.length classIndex++) {
-        classTotal = [];
+    const allStudentTotal = [];
+    for (let classIndex = 0; classIndex < allClassScore.length; classIndex++) {
+        const classTotal = [];
         for (let studentIndex = 0; studentIndex < allClassScore[classIndex].length; studentIndex++) {
             let total = 0;
             for (let subjectIndex = 0; subjectIndex < allClassScore[classIndex][studentIndex].length; subjectIndex++) {
@@ -88,9 +88,9 @@ function calculateTotalOfStudentScore(allClassScore) {
 
 function calculateAverageOfStudentScore(allClassScore) {
 
-    allStudentAverage = [];
-    for (let classIndex = 0; classIndex < allClassScore.length classIndex++) {
-        classAverage = [];
+    const allStudentAverage = [];
+    for (let classIndex = 0; classIndex < allClassScore.length; classIndex++) {
+        const classAverage = [];
         for (let studentIndex = 0; studentIndex < allClassScore[classIndex].length; studentIndex++) {
             let total = 0;
             for (let subjectIndex = 0; subjectIndex < allClassScore[classIndex][studentIndex].length; subjectIndex++) {
@@ -104,7 +104,73 @@ function calculateAverageOfStudentScore(allClassScore) {
     return allStudentAverage;
 }
 
-function calculatePositionOfStudentScore(allClassScore) {
 
+function calculatePositionOfStudentScore(allStudentTotal) {
+    const allStudentPosition = [];
+   for (let classIndex = 0; classIndex < allStudentTotal.length; classIndex++) {
+        const classPosition = [];
+        for (let studentIndex = 0; studentIndex < allStudentTotal[classIndex].length; studentIndex++) {
+            let position = 1;
+            let currentTotal = allStudentTotal[classIndex][studentIndex];
+            for (let otherStudent = 0; otherStudent < allStudentTotal[classIndex].length; otherStudent++) {
+               if (allStudentTotal[classIndex][otherStudent] > currentTotal) {
+                    position++;
+                }
+           }
+            classPosition.push(position);
+       }
+        allStudentPosition.push(classPosition);
+    }
 
+    return allStudentPosition;
 }
+
+let numberOfClass = collectNumberOfClass();
+
+let numberOfStudents = collectNumberOfStudents();
+
+let numberOfSubject = collectNumberOfSubjects();
+
+let allClassScore = collectAllClassScore(numberOfClass,numberOfStudents,numberOfSubject);
+let allStudentTotal = calculateTotalOfStudentScore(allClassScore);
+
+let allStudentAverage = calculateAverageOfStudentScore(allClassScore);
+
+let allStudentPosition = calculatePositionOfStudentScore(allStudentTotal);
+
+process.stdout.write("====================================================================\n");
+
+process.stdout.write("STUDENT".padStart(15));
+
+for (let index = 1; index <= numberOfSubject; index++) {
+    process.stdout.write(("SUB" + index).padStart(10));
+}
+
+process.stdout.write("TOTAL".padStart(10));
+process.stdout.write("AVERAGE".padStart(10));
+process.stdout.write("POS".padStart(10) + "\n");
+
+process.stdout.write("====================================================================\n");
+
+for (let classIndex = 0; classIndex < allClassScore.length; classIndex++) {
+
+    process.stdout.write(`\nCLASS ${classIndex + 1}\n`);
+
+    for (let studentIndex = 0; studentIndex < allClassScore[classIndex].length; studentIndex++) {
+
+        process.stdout.write(("Student " + (studentIndex + 1)).padStart(15));
+
+        for (let subjectIndex = 0; subjectIndex < allClassScore[classIndex][studentIndex].length; subjectIndex++) {
+
+            process.stdout.write(String(allClassScore[classIndex][studentIndex][subjectIndex]).padStart(10));
+
+        }
+
+        process.stdout.write(String(allStudentTotal[classIndex][studentIndex]).padStart(10));
+        process.stdout.write(allStudentAverage[classIndex][studentIndex].toFixed(2).padStart(10));
+        process.stdout.write(String(allStudentPosition[classIndex][studentIndex]).padStart(10) + "\n");
+
+    }
+}
+
+process.stdout.write("====================================================================\n");
